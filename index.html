@@ -187,7 +187,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .sd-x{background:var(--text3)}
 
 /* ── MAIN CONTENT ── */
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;min-height:0}
 
 /* ── MAPA LEAFLET ── */
 #map{flex:1;z-index:1}
@@ -274,8 +274,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .ni-body{font-size:10px;color:var(--text2);line-height:1.5}
 
 /* VISTAS (pages) */
-.page{display:none}
-.page.on{display:flex;flex:1;overflow:hidden}
+.page{display:none !important}
+.page.on{display:flex !important;flex:1;overflow:hidden}
 
 /* ── CADASTROS ── */
 .cad-layout{flex:1;display:flex;overflow:hidden}
@@ -370,7 +370,7 @@ input[type=range]{accent-color:var(--accent);flex:1}
 </style>
 </head>
 <body>
-<div class="app">
+<div class="app" id="app">
 
 <!-- ══════════════════ TOPBAR ══════════════════ -->
 <header class="topbar">
@@ -404,8 +404,8 @@ input[type=range]{accent-color:var(--accent);flex:1}
 <!-- ══════════════════ PÁGINAS ══════════════════ -->
 
 <!-- ── PAINEL AO VIVO ── -->
-<div class="page on" id="page-painel" style="position:relative">
-  <div class="app-body" style="flex:1">
+<div class="page on" id="page-painel" style="position:relative;flex:1;height:calc(100vh - 90px)">
+  <div class="app-body" style="flex:1;height:100%">
 
     <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
@@ -432,7 +432,7 @@ input[type=range]{accent-color:var(--accent);flex:1}
 
     <!-- MAPA PRINCIPAL -->
     <div class="main">
-      <div id="map" style="flex:1;min-height:0"></div>
+      <div id="map" style="flex:1;min-height:0;height:100%"></div>
     </div>
 
     <!-- PAINEL DIREITO -->
@@ -1182,11 +1182,20 @@ function gerarRel() {
 // NAVEGAÇÃO ENTRE PÁGINAS
 // ══════════════════════════════════════════
 function showPage(id, btn) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.page').forEach(p => {
+    p.classList.remove('on');
+    p.style.display = 'none';
+  });
   document.querySelectorAll('.npill').forEach(b => b.classList.remove('on'));
-  document.getElementById('page-'+id).classList.add('on');
+  const pg = document.getElementById('page-'+id);
+  if (pg) {
+    pg.classList.add('on');
+    pg.style.display = 'flex';
+  }
   if (btn) btn.classList.add('on');
-  if (id === 'painel') setTimeout(() => map && map.invalidateSize(), 100);
+  if (id === 'painel') {
+    setTimeout(() => { if(map) map.invalidateSize(); }, 200);
+  }
 }
 
 // ══════════════════════════════════════════
